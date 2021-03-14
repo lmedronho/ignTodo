@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import '../styles/tasklist.scss'
 
@@ -14,16 +14,61 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
+  //*********************************************************** */
+  //*                                                         *
+  //* Variable to control Todo's id in the Todo' List         *
+  //*                                                         *
+  //*********************************************************** */
+
+  const [ idTodo, setIdTodo ] = useState(1);
+  
+  function incIdTodo() {
+
+    setIdTodo (idTodo + 1);
+  }
+
   function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    
+    // Test if the description is empty
+    if (newTaskTitle.length == 0) {
+
+      alert("Task name or descrition is required!");
+      return;
+
+    }
+    // Test if the task already exists
+    if (tasks.filter(item => item.title.toUpperCase() === newTaskTitle.toUpperCase()).length > 0) {
+ 
+      alert("Task already registered!");
+      return;
+    
+    }
+    
+    incIdTodo();
+    
+    setTasks(tasks.concat({id: idTodo, "title": newTaskTitle, "isComplete" :  false}));
+    setNewTaskTitle('');
+ 
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+
+    const newTasks = tasks.map(item => item.id === id ? {
+
+      ...item, isComplete: ! item.isComplete
+    } : item) 
+
+    setTasks(newTasks);
+    
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+
+    const resultTasks = tasks.filter(item => item.id !== id);
+    setTasks(resultTasks);
+ 
   }
 
   return (
